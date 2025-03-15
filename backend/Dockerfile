@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-# Copy rest of the backend code
+# Copy rest of the backend code 
 COPY . .
 
 # Expose backend port
