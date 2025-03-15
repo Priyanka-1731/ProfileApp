@@ -35,7 +35,11 @@ jobs:
         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
 
         # docker build -t $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 frontend/
-        docker buildx build --platform linux/amd64  --tag $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 --push  frontend/
+        docker buildx build \
+        --platform linux/amd64 \
+        --tag $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 \
+        --push \
+        frontend/
         docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
         docker image prune -af
 
