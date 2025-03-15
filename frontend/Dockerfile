@@ -1,7 +1,7 @@
 # Use Node.js LTS image for build step
 FROM node:18 as build 
   
-WORKDIR /app 
+WORKDIR /app  
   
 # Install dependencies & build frontend
 COPY package*.json ./
