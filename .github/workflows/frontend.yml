@@ -28,16 +28,24 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
+    - name: Login to AWS ECR
+      run: |
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Build and Push Frontend Image
       run: |
-        
-        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 \
+            --push \
+            frontend/
+          docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
+          docker image prune -af
 
-        # docker build -t $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 frontend/
-        docker buildx build -t $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 frontend/
-        docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
-        docker image prune -af
 
 
 
