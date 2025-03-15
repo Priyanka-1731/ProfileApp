@@ -6,7 +6,7 @@ on:
   push:
     branches: [main] 
     paths:
-      - "backend/**"
+      - "frontend/**"
   workflow_dispatch:
 
 
@@ -67,10 +67,11 @@ jobs:
         script: |
           
           # Set environment variables for docker-compose
+          export MONGO_URI="mongodb://admin:admin123@mongo:27017/"
           export FRONTEND_ECR_REGISTRY=${{ secrets.FRONTEND_ECR_REGISTRY }}
           export FRONTEND_ECR_REPOSITORY=${{ secrets.FRONTEND_ECR_REPOSITORY }}
-          FRONTEND_BUILD_NUMBER=${{ vars.FRONTEND_BUILD_NUMBER }}
           export AWS_REGION= ${{ secrets.AWS_REGION }}
+          export S3_BUCKET_NAME="s3-image-uploader-priya"
 
           # Login to ECR
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
