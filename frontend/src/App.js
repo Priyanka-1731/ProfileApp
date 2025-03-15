@@ -75,7 +75,7 @@ const App = () => {
       }}
     >
       <h1 className="text-center mb-5 display-4 fw-bold text-light">
-        Profile App
+        Hello Cutie
       </h1>
 
       <Row className="justify-content-center g-4">
