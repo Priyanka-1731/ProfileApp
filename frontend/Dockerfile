@@ -2,7 +2,7 @@
 FROM node:18 as build 
   
 WORKDIR /app   
-   
+    
 # Install dependencies & build fron tend
 COPY package*.json ./ 
 RUN npm install
