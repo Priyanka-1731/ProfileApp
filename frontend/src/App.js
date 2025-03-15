@@ -27,7 +27,7 @@ const App = () => {
 
   const fetchProfiles = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/profiles");
+      const res = await axios.get("http://44.214.43.75:5000/api/profiles");
       setProfiles(res.data);
     } catch (error) {
       console.error("Error fetching profiles:", error);
@@ -57,7 +57,7 @@ const App = () => {
     data.append("image", formData.image);
 
     try {
-      await axios.post("http://localhost:5000/api/profiles", data);
+      await axios.post("http://44.214.43.75:5000/api/profiles", data);
       fetchProfiles();
       handleClose();
     } catch (error) {
