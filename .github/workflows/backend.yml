@@ -36,7 +36,6 @@ jobs:
       run: |
           docker build -t ${{ secrets.BACKEND_ECR_REGISTRY }}/${{ secrets.BACKEND_ECR_REPOSITORY }}:v1 backend/
           docker push ${{ secrets.BACKEND_ECR_REGISTRY }}/${{ secrets.BACKEND_ECR_REPOSITORY }}:v1
-
           docker image prune -af
 
 
@@ -72,12 +71,13 @@ jobs:
           export MONGO_URI="mongodb://admin:admin123@mongo:27017/"
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          export AWS_REGION= ${{ secrets.AWS_REGION }}
+          export AWS_REGION=${{ secrets.AWS_REGION }}
           export S3_BUCKET_NAME="s3-image-uploader-priya"
 
           # Login to ECR
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.BACKEND_ECR_REGISTRY }}
           docker pull ${{ secrets.BACKEND_ECR_REGISTRY }}/${{ secrets.BACKEND_ECR_REPOSITORY }}:v1
+
           docker-compose down
           docker-compose up -d 
           docker image prune -f
