@@ -38,11 +38,7 @@ jobs:
 
     - name: Build and Push Frontend Image
       run: |
-          docker buildx build \
-            --platform linux/amd64 \
-            --tag $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 \
-            --push \
-            frontend/
+          docker build ./frontend $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
           docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
           docker image prune -af
 
