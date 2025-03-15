@@ -38,7 +38,7 @@ jobs:
 
     - name: Build and Push Frontend Image
       run: |
-          docker build ./frontend $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
+          docker build ./frontend 257394462069.dkr.ecr.us-east-1.amazonaws.com/priyanka/cloudbackend:v1
           docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
           docker image prune -af
 
