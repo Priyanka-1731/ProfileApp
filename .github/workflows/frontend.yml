@@ -1,0 +1,74 @@
+
+
+name: Frontend Build & Deploy
+
+on:
+  push:
+    branches: [main] 
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+
+jobs:
+  build-push:
+    runs-on: self-hosted
+    env:
+      FRONTEND_ECR_REGISTRY: ${{ secrets.FRONTEND_ECR_REGISTRY }}
+      FRONTEND_ECR_REPOSITORY: ${{ secrets.FRONTEND_ECR_REPOSITORY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+
+
+    - name: Build and Push Frontend Image
+      run: |
+        
+        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
+
+        docker build -t $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1 frontend/
+        docker push $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
+        docker image prune -af
+
+
+
+  deploy:
+    needs: build-push
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Copy docker-compose to EC2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "docker-compose.yml"
+        target: "./"
+        overwrite: true
+
+    - name: Deploy Frontend to Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          
+          # Set environment variables for docker-compose
+          export FRONTEND_ECR_REGISTRY=${{ secrets.FRONTEND_ECR_REGISTRY }}
+          export FRONTEND_ECR_REPOSITORY=${{ secrets.FRONTEND_ECR_REPOSITORY }}
+          FRONTEND_BUILD_NUMBER=${{ vars.FRONTEND_BUILD_NUMBER }}
+          export AWS_REGION= ${{ secrets.AWS_REGION }}
+
+          # Login to ECR
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $FRONTEND_ECR_REGISTRY
+          docker pull $FRONTEND_ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:v1
+          docker-compose up -d 
+          docker image prune -f
